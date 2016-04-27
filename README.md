@@ -18,22 +18,22 @@ For console information during runtime, enable the debug var in the main file.
 * animation mode to load and show .gif animations (see known bugs)
 
 ##ToDo before first start:
-*Led library istalled for python (see hzeller instructions)
-*All fonts are needed in .bdf
-*The file locations in the could should be changed to the needed location
+* Led library istalled for python (see hzeller instructions)
+* All fonts are needed in .bdf
+* The file locations in the could should be changed to the needed location
 
 ##Notes:
-*The quote file is empty
-*The image and animation location is empty
-*The config xml file is nearly empty
+* The quote file is empty
+* The image and animation location is empty
+* The config xml file is nearly empty
 
 ##ToDo general:
-*Set up a Log file for exeptions
-*Set up Web-Server for config editing
+* Set up a Log file for exeptions
+* Set up Web-Server for config editing
 
 ##Known Bugs:
-*The animation mode in combination with any other mode is still buggy and the display keeps flickering randomly
-**(If you would like to use animations, you should load a seperate config for animations only)
+* The animation mode in combination with any other mode is still buggy and the display keeps flickering randomly
+** (If you would like to use animations, you should load a seperate config for animations only)
 
 The Library that ist used to control and handle the Display panels is from hzeller/rpi-rgb-led-matrix and can be found under:
 
