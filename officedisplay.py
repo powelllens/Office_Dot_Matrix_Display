@@ -169,7 +169,7 @@ def Routine_Welcome():
 
     display.clearoffsetScreen()
 
-    display.drawtext(6,1,"Welcome to the GPT Office:","7x13B",5,148,208,True)
+    display.drawtext(6,1,"Welcome to the Office:","7x13B",5,148,208,True)
     display.drawtext(xPosition,18,person_name,"7x13B",5,148,208,True)
     display.updateScreen()
 
@@ -215,7 +215,7 @@ def Routine_RevenueCounter():
         xPosition = 100 - (len(saved_money) * 3.5)
 
         display.clearoffsetScreen()
-        display.drawtext(6,1,"GPT P&D INNOVATION REVENUE","7x13B",0,74,193,True)
+        display.drawtext(6,1,"INNOVATION REVENUE","7x13B",0,74,193,True)
         display.drawtext(61,11,"- COUNTER -","7x13B",5,148,208,True)
         display.drawtext(xPosition,22,saved_money,"7x13B",216,228,249,True)
         #display.drawtext(1,24,str(past_time),"5x8",10,10,10,True)
