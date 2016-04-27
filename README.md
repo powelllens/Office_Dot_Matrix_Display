@@ -1,6 +1,5 @@
 # Office Dot Matrix Display
 ===========================
-
 All software, description and required steps that are created during the development of the Office Dot Matrix Display
 
 The Display is buildup with six 32x32 RGB LED Dot Matrix Display's in series, controlled by Raspberry Pi 2. 
@@ -17,7 +16,7 @@ For console information during runtime, enable the debug var in the main file.
 -soccer mode to show the first five table places
 -hockey mode to show the first five table places
 -animation mode to load and show .gif animations (see known bugs)
-
+--
 ## ToDo before first start:
 -Led library istalled for python (see hzeller instructions)
 -All fonts are needed in .bdf
