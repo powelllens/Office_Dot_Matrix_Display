@@ -15,19 +15,19 @@ case "$1" in
         # START
 	echo "Start Disp-Software"
 	cd /programs/office_display
-	sudo python officedisplay.py &
+	sudo python main.py &
         ;;
     stop)
         # STOP
 	echo "Stop Disp-Software"
-	sudo killall python officedisplay.py
+	sudo killall python main.py
         ;;
     restart)
         # RESTART
 	echo "Restart Disp-Software"
-	sudo killall python officedisplay.py
+	sudo killall python main.py
 	cd /programs/office_display
-	sudo python officedisplay.py &
+	sudo python main.py &
 
         ;;
 esac
