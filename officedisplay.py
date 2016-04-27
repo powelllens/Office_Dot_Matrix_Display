@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 
-import time, sys, random, os.path, datetime as dt, untangle
+import time, sys, random, os.path, datetime as dt
+from bs4 import BeautifulSoup
 from display_class import *
 from waldhof import *
 from adler import *
@@ -19,6 +20,7 @@ global quote_array
 global displayBrightness
 global animation_length
 global animation_frame_delay
+global config
 
 debug = False
 
@@ -64,11 +66,11 @@ def str2bool(v):
         return False
 
 def loadingConfig():
+    global config
     global select
     global switchontime
     global switchofftime
     global activerandom
-    global configobj
     global activated_modes
     global time_modes
     global quote_array
@@ -83,41 +85,46 @@ def loadingConfig():
     if debug:
         print 'Config File is avaliable?: ' + str(os.path.isfile(config_path))
 
-    configobj = untangle.parse(config_path)
+    with open(config_path) as f:
+        content = f.read()
+    f.close()
+
+    config = BeautifulSoup(content, 'html.parser')
+    # print(config.prettify())
 
     # Load over all display settings
-    select = int(configobj.config.settings.startwithmode.cdata)
+    select = int(config.settings.startwithmode.contents[0])
 
-    switchontime = int(configobj.config.settings.switchontime.cdata)
-    switchofftime = int(configobj.config.settings.switchofftime.cdata)
-    displayBrightness = int(configobj.config.settings.displaybrightness.cdata)
-    activerandom = str2bool(configobj.config.settings.activaterandom.cdata)
+    switchontime = int(config.settings.switchontime.contents[0])
+    switchofftime = int(config.settings.switchofftime.contents[0])
+    displayBrightness = int(config.settings.displaybrightness.contents[0])
+    activerandom = str2bool(config.settings.activaterandom.contents[0])
     display.setBrightness(displayBrightness)
 
     # welcome
-    activated_modes[0] = str2bool(configobj.config.modes.welcome.activate.cdata)
-    time_modes[0] = int(configobj.config.modes.welcome.time.cdata)
+    activated_modes[0] = str2bool(config.modes.welcome.activate.contents[0])
+    time_modes[0] = int(config.modes.welcome.time.contents[0])
     # revenuecounter
-    activated_modes[1] = str2bool(configobj.config.modes.revenuecounter.activate.cdata)
-    time_modes[1] = int(configobj.config.modes.revenuecounter.time.cdata)
+    activated_modes[1] = str2bool(config.modes.revenuecounter.activate.contents[0])
+    time_modes[1] = int(config.modes.revenuecounter.time.contents[0])
     # employee
-    activated_modes[2] = str2bool(configobj.config.modes.employee.activate.cdata)
-    time_modes[2] = int(configobj.config.modes.employee.time.cdata)
+    activated_modes[2] = str2bool(config.modes.employee.activate.contents[0])
+    time_modes[2] = int(config.modes.employee.time.contents[0])
     # soccertable
-    activated_modes[3] = str2bool(configobj.config.modes.soccertable.activate.cdata)
-    time_modes[3] = int(configobj.config.modes.soccertable.time.cdata)
-    # logo
-    activated_modes[4] = str2bool(configobj.config.modes.freudenberglogo.activate.cdata)
-    time_modes[4] = int(configobj.config.modes.freudenberglogo.time.cdata)
+    activated_modes[3] = str2bool(config.modes.soccertable.activate.contents[0])
+    time_modes[3] = int(config.modes.soccertable.time.contents[0])
+    # freudenberglogo
+    activated_modes[4] = str2bool(config.modes.freudenberglogo.activate.contents[0])
+    time_modes[4] = int(config.modes.freudenberglogo.time.contents[0])
     # hockeytable
-    activated_modes[5] = str2bool(configobj.config.modes.hockeytable.activate.cdata)
-    time_modes[5] = int(configobj.config.modes.hockeytable.time.cdata)
+    activated_modes[5] = str2bool(config.modes.hockeytable.activate.contents[0])
+    time_modes[5] = int(config.modes.hockeytable.time.contents[0])
     # quotes
-    activated_modes[6] = str2bool(configobj.config.modes.quotes.activate.cdata)
-    time_modes[6] = int(configobj.config.modes.quotes.time.cdata)
+    activated_modes[6] = str2bool(config.modes.quotes.activate.contents[0])
+    time_modes[6] = int(config.modes.quotes.time.contents[0])
     # animations
-    activated_modes[7] = str2bool(configobj.config.modes.animations.activate.cdata)
-    time_modes[7] = int(configobj.config.modes.animations.time.cdata)
+    activated_modes[7] = str2bool(config.modes.animations.activate.contents[0])
+    time_modes[7] = int(config.modes.animations.time.contents[0])
 
     #Load Quote Array
     f = open(quotes_path, 'r')
@@ -144,6 +151,7 @@ def loadingConfig():
             print 'Animations lengths:', animation_length
 
 def Routine_Welcome():
+    global config
     global loadnewconfig
     if debug:
         print 'Print Welcome Screen'
@@ -152,13 +160,16 @@ def Routine_Welcome():
     start_time = time.time()
     past_time = 0.0
 
-    person_name = str(configobj.config.modes.welcome.name.cdata)
+    if len(config.modes.welcome.contents[5]) > 0:
+        person_name = config.modes.welcome.contents[5].contents[0]
+    else:
+        person_name = ''
 
     xPosition = 100 - (len(person_name) * 3.5)
 
     display.clearoffsetScreen()
+
     display.drawtext(6,1,"Welcome to the GPT Office:","7x13B",5,148,208,True)
-    #display.drawtext(6,1,"Happy Birthday","7x13B",5,148,208,True)
     display.drawtext(xPosition,18,person_name,"7x13B",5,148,208,True)
     display.updateScreen()
 
@@ -176,6 +187,7 @@ def Routine_Welcome():
         past_time = round(end_time - start_time,0)
 
 def Routine_RevenueCounter():
+    global config
     global loadnewconfig
     if debug:
         print 'Print Revenue Counter'
@@ -184,7 +196,7 @@ def Routine_RevenueCounter():
     start_time = time.time()
     past_time = 0.0
 
-    price = int(configobj.config.modes.revenuecounter.value.cdata)
+    price = int(config.modes.revenuecounter.value.contents[0])
 
     while past_time < time_modes[1]:
         # Programm sequence...
@@ -214,6 +226,7 @@ def Routine_RevenueCounter():
         past_time = round(end_time - start_time,0)
 
 def Routine_Employee():
+    global config
     global loadnewconfig
     if debug:
         print 'Print Employees'
@@ -225,6 +238,7 @@ def Routine_Employee():
     employeelog = [-1,-1,-1,-1,-1]
     employeelogcounter = 0
     displayimage = False
+    line_number = 1
 
     while past_time < time_modes[2]:
         # Programm sequence...
@@ -242,170 +256,35 @@ def Routine_Employee():
             errorcounter = errorcounter + 1
         employeelog[employeelogcounter] = employee
         employeelogcounter = employeelogcounter + 1
+
         if employeelogcounter > 4:
             employeelog = [-1,-1,-1,-1,-1]
             employeelogcounter = 0
 
         try:
             display.clearoffsetScreen()
-            if employee == 0:
-                if str(configobj.config.modes.employee.employee_1.name.cdata) != '':
-                    display.drawtext(0,0,str(configobj.config.modes.employee.employee_1.name.cdata),"7x13B",255,255,255,True)
-                    if str(configobj.config.modes.employee.employee_1.line1.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_1.line1['x']),
-                                         int(configobj.config.modes.employee.employee_1.line1['y']),
-                                         str(configobj.config.modes.employee.employee_1.line1.cdata),
-                                         str(configobj.config.modes.employee.employee_1.line1['font']),
-                                         int(configobj.config.modes.employee.employee_1.line1['red']),
-                                         int(configobj.config.modes.employee.employee_1.line1['green']),
-                                         int(configobj.config.modes.employee.employee_1.line1['blue']),True)
-                    if str(configobj.config.modes.employee.employee_1.line2.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_1.line2['x']),
-                                         int(configobj.config.modes.employee.employee_1.line2['y']),
-                                         str(configobj.config.modes.employee.employee_1.line2.cdata),
-                                         str(configobj.config.modes.employee.employee_1.line2['font']),
-                                         int(configobj.config.modes.employee.employee_1.line2['red']),
-                                         int(configobj.config.modes.employee.employee_1.line2['green']),
-                                         int(configobj.config.modes.employee.employee_1.line2['blue']),True)
-                    if str(configobj.config.modes.employee.employee_1.line3.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_1.line3['x']),
-                                         int(configobj.config.modes.employee.employee_1.line3['y']),
-                                         str(configobj.config.modes.employee.employee_1.line3.cdata),
-                                         str(configobj.config.modes.employee.employee_1.line3['font']),
-                                         int(configobj.config.modes.employee.employee_1.line3['red']),
-                                         int(configobj.config.modes.employee.employee_1.line3['green']),
-                                         int(configobj.config.modes.employee.employee_1.line3['blue']),True)
-                    if str(configobj.config.modes.employee.employee_1.image.cdata) != '':
-                        display.showimage(161,0,str(configobj.config.modes.employee.employee_1.image.cdata))
-                    displayimage = True
 
-            elif employee == 1:
-                if str(configobj.config.modes.employee.employee_2.name.cdata) != '':
-                    display.drawtext(0,0,str(configobj.config.modes.employee.employee_2.name.cdata),"7x13B",255,255,255,True)
-                    if str(configobj.config.modes.employee.employee_2.line1.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_2.line1['x']),
-                                         int(configobj.config.modes.employee.employee_2.line1['y']),
-                                         str(configobj.config.modes.employee.employee_2.line1.cdata),
-                                         str(configobj.config.modes.employee.employee_2.line1['font']),
-                                         int(configobj.config.modes.employee.employee_2.line1['red']),
-                                         int(configobj.config.modes.employee.employee_2.line1['green']),
-                                         int(configobj.config.modes.employee.employee_2.line1['blue']),True)
-                    if str(configobj.config.modes.employee.employee_2.line2.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_2.line2['x']),
-                                         int(configobj.config.modes.employee.employee_2.line2['y']),
-                                         str(configobj.config.modes.employee.employee_2.line2.cdata),
-                                         str(configobj.config.modes.employee.employee_2.line2['font']),
-                                         int(configobj.config.modes.employee.employee_2.line2['red']),
-                                         int(configobj.config.modes.employee.employee_2.line2['green']),
-                                         int(configobj.config.modes.employee.employee_2.line2['blue']),True)
-                    if str(configobj.config.modes.employee.employee_2.line3.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_2.line3['x']),
-                                         int(configobj.config.modes.employee.employee_2.line3['y']),
-                                         str(configobj.config.modes.employee.employee_2.line3.cdata),
-                                         str(configobj.config.modes.employee.employee_2.line3['font']),
-                                         int(configobj.config.modes.employee.employee_2.line3['red']),
-                                         int(configobj.config.modes.employee.employee_2.line3['green']),
-                                         int(configobj.config.modes.employee.employee_2.line3['blue']),True)
-                    if str(configobj.config.modes.employee.employee_2.image.cdata) != '':
-                        display.showimage(161,0,str(configobj.config.modes.employee.employee_2.image.cdata))
-                    displayimage = True
-
-            elif employee == 2:
-                if str(configobj.config.modes.employee.employee_3.name.cdata) != '':
-                    display.drawtext(0,0,str(configobj.config.modes.employee.employee_3.name.cdata),"7x13B",255,255,255,True)
-                    if str(configobj.config.modes.employee.employee_3.line1.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_3.line1['x']),
-                                         int(configobj.config.modes.employee.employee_3.line1['y']),
-                                         str(configobj.config.modes.employee.employee_3.line1.cdata),
-                                         str(configobj.config.modes.employee.employee_3.line1['font']),
-                                         int(configobj.config.modes.employee.employee_3.line1['red']),
-                                         int(configobj.config.modes.employee.employee_3.line1['green']),
-                                         int(configobj.config.modes.employee.employee_3.line1['blue']),True)
-                    if str(configobj.config.modes.employee.employee_3.line2.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_3.line2['x']),
-                                         int(configobj.config.modes.employee.employee_3.line2['y']),
-                                         str(configobj.config.modes.employee.employee_3.line2.cdata),
-                                         str(configobj.config.modes.employee.employee_3.line2['font']),
-                                         int(configobj.config.modes.employee.employee_3.line2['red']),
-                                         int(configobj.config.modes.employee.employee_3.line2['green']),
-                                         int(configobj.config.modes.employee.employee_3.line2['blue']),True)
-                    if str(configobj.config.modes.employee.employee_3.line3.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_3.line3['x']),
-                                         int(configobj.config.modes.employee.employee_3.line3['y']),
-                                         str(configobj.config.modes.employee.employee_3.line3.cdata),
-                                         str(configobj.config.modes.employee.employee_3.line3['font']),
-                                         int(configobj.config.modes.employee.employee_3.line3['red']),
-                                         int(configobj.config.modes.employee.employee_3.line3['green']),
-                                         int(configobj.config.modes.employee.employee_3.line3['blue']),True)
-                    if str(configobj.config.modes.employee.employee_3.image.cdata) != '':
-                        display.showimage(161,0,str(configobj.config.modes.employee.employee_3.image.cdata))
-                    displayimage = True
-
-            elif employee == 3:
-                if str(configobj.config.modes.employee.employee_4.name.cdata) != '':
-                    display.drawtext(0,0,str(configobj.config.modes.employee.employee_4.name.cdata),"7x13B",255,255,255,True)
-                    if str(configobj.config.modes.employee.employee_4.line1.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_4.line1['x']),
-                                         int(configobj.config.modes.employee.employee_4.line1['y']),
-                                         str(configobj.config.modes.employee.employee_4.line1.cdata),
-                                         str(configobj.config.modes.employee.employee_4.line1['font']),
-                                         int(configobj.config.modes.employee.employee_4.line1['red']),
-                                         int(configobj.config.modes.employee.employee_4.line1['green']),
-                                         int(configobj.config.modes.employee.employee_4.line1['blue']),True)
-                    if str(configobj.config.modes.employee.employee_4.line2.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_4.line2['x']),
-                                         int(configobj.config.modes.employee.employee_4.line2['y']),
-                                         str(configobj.config.modes.employee.employee_4.line2.cdata),
-                                         str(configobj.config.modes.employee.employee_4.line2['font']),
-                                         int(configobj.config.modes.employee.employee_4.line2['red']),
-                                         int(configobj.config.modes.employee.employee_4.line2['green']),
-                                         int(configobj.config.modes.employee.employee_4.line2['blue']),True)
-                    if str(configobj.config.modes.employee.employee_4.line3.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_4.line3['x']),
-                                         int(configobj.config.modes.employee.employee_4.line3['y']),
-                                         str(configobj.config.modes.employee.employee_4.line3.cdata),
-                                         str(configobj.config.modes.employee.employee_4.line3['font']),
-                                         int(configobj.config.modes.employee.employee_4.line3['red']),
-                                         int(configobj.config.modes.employee.employee_4.line3['green']),
-                                         int(configobj.config.modes.employee.employee_4.line3['blue']),True)
-                    if str(configobj.config.modes.employee.employee_4.image.cdata) != '':
-                        display.showimage(161,0,str(configobj.config.modes.employee.employee_4.image.cdata))
-                    displayimage = True
-
-            elif employee == 4:
-                if str(configobj.config.modes.employee.employee_5.name.cdata) != '':
-                    display.drawtext(0,0,str(configobj.config.modes.employee.employee_5.name.cdata),"7x13B",255,255,255,True)
-                    if str(configobj.config.modes.employee.employee_5.line1.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_5.line1['x']),
-                                         int(configobj.config.modes.employee.employee_5.line1['y']),
-                                         str(configobj.config.modes.employee.employee_5.line1.cdata),
-                                         str(configobj.config.modes.employee.employee_5.line1['font']),
-                                         int(configobj.config.modes.employee.employee_5.line1['red']),
-                                         int(configobj.config.modes.employee.employee_5.line1['green']),
-                                         int(configobj.config.modes.employee.employee_5.line1['blue']),True)
-                    if str(configobj.config.modes.employee.employee_5.line2.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_5.line2['x']),
-                                         int(configobj.config.modes.employee.employee_5.line2['y']),
-                                         str(configobj.config.modes.employee.employee_5.line2.cdata),
-                                         str(configobj.config.modes.employee.employee_5.line2['font']),
-                                         int(configobj.config.modes.employee.employee_5.line2['red']),
-                                         int(configobj.config.modes.employee.employee_5.line2['green']),
-                                         int(configobj.config.modes.employee.employee_5.line2['blue']),True)
-                    if str(configobj.config.modes.employee.employee_5.line3.cdata) != '':
-                        display.drawtext(int(configobj.config.modes.employee.employee_5.line3['x']),
-                                         int(configobj.config.modes.employee.employee_5.line3['y']),
-                                         str(configobj.config.modes.employee.employee_5.line3.cdata),
-                                         str(configobj.config.modes.employee.employee_5.line3['font']),
-                                         int(configobj.config.modes.employee.employee_5.line3['red']),
-                                         int(configobj.config.modes.employee.employee_5.line3['green']),
-                                         int(configobj.config.modes.employee.employee_5.line3['blue']),True)
-                    if str(configobj.config.modes.employee.employee_5.image.cdata) != '':
-                        display.showimage(161,0,str(configobj.config.modes.employee.employee_5.image.cdata))
-                    displayimage = True
+            employee_tmp = getattr(config.modes.employee, 'employee_' + str(employee + 1))
+            if len(employee_tmp.contents[1]) > 0:
+                display.drawtext(0,0,str(employee_tmp.contents[1].contents[0]),"7x13B",255,255,255,True)
+                for line_number in range(1, 3):
+                    if len(getattr(employee_tmp, 'line' + str(line_number))) > 0:
+                        line_tmp = getattr(employee_tmp, 'line' + str(line_number))
+                        display.drawtext(int(line_tmp['x']),
+                                         int(line_tmp['y']),
+                                         str(line_tmp.contents[0]),
+                                         str(line_tmp['font']),
+                                         int(line_tmp['red']),
+                                         int(line_tmp['green']),
+                                         int(line_tmp['blue']),True)
+                if len(employee_tmp.contents[9]) > 0:
+                    display.showimage(160,0,str(employee_tmp.contents[9].contents[0]))
+                displayimage = True
 
             display.updateScreen()
+
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            print "Unexpected error in Employee:", sys.exc_info()[0]
             if debug:
                 print 'Employee: ' + str(employee)
                 print 'Faild to display part of employee config'
@@ -436,6 +315,8 @@ def Routine_Soccer():
         display.drawtext(2,2,"Preparing Football","8x13B",0,74,193,True)
         display.drawtext(1,18,"Tables...","8x13B",5,148,208,True)
         display.updateScreen()
+
+        soccertable = waldhof.getNewFootballTable()
 
         try:
             if debug:
@@ -489,7 +370,7 @@ def Routine_Soccer():
                 break
 
             if i < 4:
-                for x in range(0,-32,-2):
+                for x in range(0,-34,-2):
                     display.clearoffsetScreen()
 
                     display.drawtext(1,x + 4,soccertable[i][0],"7x14B",255,255,255,True)
@@ -498,11 +379,11 @@ def Routine_Soccer():
                     display.drawtext(85,x + 19,'Points: ' + soccertable[i][3],"6x10",255,255,255,True)
                     display.showimage(160,x+5,'./images/' + str(i+1) + '_soccer.png')
 
-                    display.drawtext(1,x + 34,soccertable[i+1][0],"7x14B",255,255,255,True)
-                    display.drawtext(7,x + 35,'. ' + soccertable[i+1][1],"6x13",255,255,255,True)
-                    display.drawtext(1,x + 49,'Goal dif: ' + soccertable[i+1][2],"6x10",255,255,255,True)
-                    display.drawtext(85,x + 49,'Points: ' + soccertable[i+1][3],"6x10",255,255,255,True)
-                    display.showimage(160,x + 35,'./images/' + str(i+2) + '_soccer.png')
+                    display.drawtext(1,x + 36,soccertable[i+1][0],"7x14B",255,255,255,True)
+                    display.drawtext(7,x + 37,'. ' + soccertable[i+1][1],"6x13",255,255,255,True)
+                    display.drawtext(1,x + 51,'Goal dif: ' + soccertable[i+1][2],"6x10",255,255,255,True)
+                    display.drawtext(85,x + 51,'Points: ' + soccertable[i+1][3],"6x10",255,255,255,True)
+                    display.showimage(160,x + 37,'./images/' + str(i+2) + '_soccer.png')
 
                     display.updateScreen()
                     if not debug:
@@ -558,7 +439,6 @@ def Routine_Hockey():
             if debug:
                 print 'Try to connect to Adler'
             hockeytable = adler.getNewHockeyTable()
-
             if debug:
                 print 'Recieved a Hockeytable'
         except:
@@ -574,12 +454,12 @@ def Routine_Hockey():
         for i in range(0,5):
             if i < 5:
                 display.clearoffsetScreen()
-                display.drawtext(1,x,hockeytable[i][0],"7x14B",255,255,255,True)
+                display.drawtext(1,x,str(hockeytable[i][0]),"7x14B",255,255,255,True)
                 display.drawtext(7,x + 1,'. ' + hockeytable[i][1],"6x13",255,255,255,True)
                 display.drawtext(1,x + 15,'Games: ' + hockeytable[i][2],"6x9",255,255,255,True)
                 display.drawtext(67,x + 15,'Points: ' + hockeytable[i][3],"6x9",255,255,255,True)
                 display.drawtext(1,x + 24,'Goals: ' + hockeytable[i][4] + ':' + hockeytable[i][5],"6x9",255,255,255,True)
-                display.showimage(160,x + 35,'./images/' + str(i+1) + '_hockey.png')
+                display.showimage(160,x + 5,'./images/' + str(i+1) + '_hockey.png')
                 display.updateScreen()
                 if not debug:
                     time.sleep(4)
@@ -602,14 +482,14 @@ def Routine_Hockey():
                     display.drawtext(1,x + 15,'Games: ' + hockeytable[i][2],"6x9",255,255,255,True)
                     display.drawtext(67,x + 15,'Points: ' + hockeytable[i][3],"6x9",255,255,255,True)
                     display.drawtext(1,x + 24,'Goals: ' + hockeytable[i][4] + ':' + hockeytable[i][5],"6x9",255,255,255,True)
-                    display.showimage(160,x + 35,'./images/' + str(i+1) + '_hockey.png')
+                    display.showimage(160,x + 5,'./images/' + str(i+1) + '_hockey.png')
 
-                    display.drawtext(1,x,hockeytable[i][0],"7x14B",255,255,255,True)
-                    display.drawtext(7,x + 31,'. ' + hockeytable[i][1],"6x13",255,255,255,True)
-                    display.drawtext(1,x + 45,'Games: ' + hockeytable[i][2],"6x9",255,255,255,True)
-                    display.drawtext(67,x + 45,'Points: ' + hockeytable[i][3],"6x9",255,255,255,True)
-                    display.drawtext(1,x + 54,'Goals: ' + hockeytable[i][4] + ':' + hockeytable[i][5],"6x9",255,255,255,True)
-                    display.showimage(160,x + 65,'./images/' + str(i+2) + '_hockey.png')
+                    display.drawtext(1,x + 32,hockeytable[i+1][0],"7x14B",255,255,255,True)
+                    display.drawtext(7,x + 33,'. ' + hockeytable[i+1][1],"6x13",255,255,255,True)
+                    display.drawtext(1,x + 47,'Games: ' + hockeytable[i+1][2],"6x9",255,255,255,True)
+                    display.drawtext(67,x + 47,'Points: ' + hockeytable[i+1][3],"6x9",255,255,255,True)
+                    display.drawtext(1,x + 56,'Goals: ' + hockeytable[i+1][4] + ':' + hockeytable[i+1][5],"6x9",255,255,255,True)
+                    display.showimage(160,x + 37,'./images/' + str(i+2) + '_hockey.png')
 
                     display.updateScreen()
                     if not debug:
@@ -668,7 +548,7 @@ def Routine_animations():
 
     while past_time < time_modes[7]:
 
-        display.show_animation_image(animation_number,frame,Loop_play)
+        display.show_animation_image(animation_number,frame)
 
         time.sleep(delay)
 
@@ -677,6 +557,7 @@ def Routine_animations():
             loadnewconfig = True
             if debug:
                 print 'found a LOCKFILE'
+            break
 
         frame += 1
         if frame > max_frame:
@@ -761,6 +642,7 @@ def Main():
                 Routine_Quotes()
             elif select == 7 and activated_modes[7]:
                 Routine_animations()
+                display.matrix.SwapOnVSync(display.offsetCanvas)
 
         if os.path.isfile(lockfile_path):
             loadnewconfig = True

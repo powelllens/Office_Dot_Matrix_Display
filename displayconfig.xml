@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<settings>
+		<displaybrightness>50</displaybrightness>
+		<switchontime>7</switchontime>
+		<switchofftime>17</switchofftime>
+		<activaterandom>True</activaterandom>
+		<startwithmode>0</startwithmode>
+	</settings>
+	<modes>
+		<welcome>
+			<activate>False</activate>
+			<time>600</time>
+			<name>Max Mustermann</name>
+		</welcome>
+		<revenuecounter>
+			<activate>True</activate>
+			<time>60</time>
+			<value>0</value>
+		</revenuecounter>
+		<employee>
+			<activate>True</activate>
+			<time>20</time>
+			<employee_1>
+				<name></name>
+				<line1 x='' y='' red='' green='' blue='' font=''></line1>
+				<line2 x='' y='' red='' green='' blue='' font=''></line2>
+				<line3 x='' y='' red='' green='' blue='' font=''></line3>
+				<image></image>
+			</employee_1>
+			<employee_2>
+				<name></name>
+				<line1 x='' y='' red='' green='' blue='' font=''></line1>
+				<line2 x='' y='' red='' green='' blue='' font=''></line2>
+				<line3 x='' y='' red='' green='' blue='' font=''></line3>
+				<image></image>
+			</employee_2>
+			<employee_3>
+				<name></name>
+				<line1 x='' y='' red='' green='' blue='' font=''></line1>
+				<line2 x='' y='' red='' green='' blue='' font=''></line2>
+				<line3 x='' y='' red='' green='' blue='' font=''></line3>
+				<image></image>
+			</employee_3>
+			<employee_4>
+				<name></name>
+				<line1 x='' y='' red='' green='' blue='' font=''></line1>
+				<line2 x='' y='' red='' green='' blue='' font=''></line2>
+				<line3 x='' y='' red='' green='' blue='' font=''></line3>
+				<image></image>
+			</employee_4>
+			<employee_5>
+				<name></name>
+				<line1 x='' y='' red='' green='' blue='' font=''></line1>
+				<line2 x='' y='' red='' green='' blue='' font=''></line2>
+				<line3 x='' y='' red='' green='' blue='' font=''></line3>
+				<image></image>
+			</employee_5>
+		</employee>
+		<soccertable>
+			<activate>True</activate>
+			<time>1</time>
+		</soccertable>
+		<hockeytable>
+			<activate>False</activate>
+			<time>1</time>
+		</hockeytable>
+		<quotes>
+			<activate>True</activate>
+			<time>60</time>
+		</quotes>
+		<freudenberglogo>
+			<activate>True</activate>
+			<time>60</time>
+		</freudenberglogo>
+		<animations>
+			<activate>False</activate>
+			<time>30</time>
+		</animations>
+	</modes>
+</config>

@@ -36,9 +36,11 @@ class display_class:
         self.matrix.luminanceCorrect = luminanceCorrect
 
     def updateScreen(self):
+        # This function is to show the canvas and update the screen
         self.offsetCanvas = self.matrix.SwapOnVSync(self.offsetCanvas)
 
     def clearoffsetScreen(self):
+        # This is the normal way to clear the canvas
         self.offsetCanvas.Fill(0,0,0)
 
     # Display image on the given coordinates
@@ -48,6 +50,8 @@ class display_class:
         self.xy = [0,0]
         self.xymax = self.im.size
         self.alpha = 255
+        if (not self.im.mode == 'RGB') or (not self.im.mode == 'RGBA'):
+            self.im = self.im.convert('RGBA')
         if self.im.mode == 'RGB':
             for self.xy[0] in range(0,self.xymax[0]):
                 for self.xy[1] in range(0,self.xymax[1]):
@@ -68,11 +72,14 @@ class display_class:
         if not self.fonthight.isdigit():
             self.fonthight = self.fonthight[0:len(self.fonthight)-1]
         self.fontwidth = fonttype[0:fonttype.find('x')]
-
         self.im = Image.new("I", (len(text)*int(self.fontwidth),int(self.fonthight)-1))
         self.draw = ImageDraw.Draw(self.im)
+        # all .bdf files are converted to .pil for easy access
         self.font = ImageFont.load("/programs/rpi-rgb-led-matrix-master/fonts/" + fonttype + ".pil")
-        self.draw.text((0, -1), text, font=self.font)
+        if isinstance(text, str):
+            self.draw.text((0, -1), text.decode("utf8").encode("iso-8859-1"), font=self.font)
+        elif isinstance(text, unicode):
+            self.draw.text((0, -1), text.encode("iso-8859-1"), font=self.font)
         self.xy = [0,0]
         self.xymax = self.im.size
         for self.xy[0] in range(0,self.xymax[0]):
@@ -83,9 +90,8 @@ class display_class:
                elif clear == True:
                    self.offsetCanvas.SetPixel(x + self.xy[0],y + self.xy[1],0,0,0)
 
-
     def load_animations(self,path):
-        # load and preprocess animations to speed up things as fast as possibel!
+        # load and preprocess animations to speed up things
         global AnimationCanvas
 
         self.animation_length = [0]
@@ -93,7 +99,7 @@ class display_class:
         self.anim_counter = 0
         AnimationCanvas = []
         path = path + '/*.gif'
-
+        # go through all . gif files in the given folder
         for self.infile in glob.glob(path):
             AnimationCanvas.append([])
             if self.anim_counter > 0:
@@ -104,7 +110,8 @@ class display_class:
             self.frame_delay[self.anim_counter] = self.im.info['duration']
             self.frame_counter = 0
 
-            try:
+            try: #go through all frames in the gif file, at the end the loop will fail
+            # for each frame a canvas is created in an 2D array which can be accessed with the animation and frame number
                 while 1:
                     AnimationCanvas[self.anim_counter].append(0)
                     AnimationCanvas[self.anim_counter][self.frame_counter] = self.matrix.CreateFrameCanvas()
@@ -121,12 +128,12 @@ class display_class:
                     self.frame_counter = self.im.tell()
             except:
                 pass
-
             self.animation_length[self.anim_counter] = self.frame_counter
             self.anim_counter += 1
-
+        # after all gif files put back the animation length and the frame numbers to the program
         return self.animation_length, self.frame_delay
 
-    def show_animation_image(self,animation_number,frame_number,Loop_play):
+
+    def show_animation_image(self,animation_number,frame_number):
         global AnimationCanvas
-        self.matrix.Swa (AnimationCanvas[animation_number][frame_number])
+        self.matrix.SwapOnVSync(AnimationCanvas[animation_number][frame_number])
