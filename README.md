@@ -8,6 +8,7 @@ To run the software, set up the config file and start officedisplay.py.
 For console information during runtime, enable the debug var in the main file.
 
 ###Features:
+------------
   -Welcome screen for visitors
   -Logo mode to show the companys logo
   -Employee mode to introduce the office employees with a funny sentence and an image
@@ -16,7 +17,7 @@ For console information during runtime, enable the debug var in the main file.
   -soccer mode to show the first five table places
   -hockey mode to show the first five table places
   -animation mode to load and show .gif animations (see known bugs)
-
+--
 ToDo before first start:
 --
 -Led library istalled for python (see hzeller instructions)
