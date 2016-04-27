@@ -9,14 +9,14 @@ For console information during runtime, enable the debug var in the main file.
 
 Features:
 --
--Welcome screen for visitors
--Logo mode to show the companys logo
--Employee mode to introduce the office employees with a funny sentence and an image
--Revenue counter mode (a value that is increased over the yaer in dollar)
--Quote mode for some funny random quotes
--soccer mode to show the first five table places
--hockey mode to show the first five table places
--animation mode to load and show .gif animations (see known bugs)
+  -Welcome screen for visitors
+  -Logo mode to show the companys logo
+  -Employee mode to introduce the office employees with a funny sentence and an image
+  -Revenue counter mode (a value that is increased over the yaer in dollar)
+  -Quote mode for some funny random quotes
+  -soccer mode to show the first five table places
+  -hockey mode to show the first five table places
+  -animation mode to load and show .gif animations (see known bugs)
 
 ToDo before first start:
 --
