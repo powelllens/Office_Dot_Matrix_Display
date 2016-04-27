@@ -7,8 +7,7 @@ The Display is buildup with six 32x32 RGB LED Dot Matrix Display's in series, co
 To run the software, set up the config file and start officedisplay.py.
 For console information during runtime, enable the debug var in the main file.
 
-Features:
---
+###Features:
   -Welcome screen for visitors
   -Logo mode to show the companys logo
   -Employee mode to introduce the office employees with a funny sentence and an image
